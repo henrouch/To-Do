@@ -65,6 +65,42 @@ def matches_deadline(task, deadline):
     # simple exact-match deadline filter (ex: "2026-02-21")
     return str(task.get("deadline", "")) == str(deadline)
 
+@mcp.tool(title="Filter Tasks")
+def filter_tasks(
+    client_id: str = DEFAULT_CLIENT,
+    deadline: str = "",
+    category: str = "",
+    completed: str = ""   # "", "true", "false"
+):
+    """
+    Filter by:
+      - deadline (exact match string)
+      - category (case-insensitive)
+      - completed: "true" or "false" (optional)
+    """
+    data = load_data()
+    if "clients" not in data:
+        data["clients"] = {}
+    ensure_client(data, client_id)
+
+    tasks = data["clients"][client_id]["tasks"]
+
+    # Apply filters
+    result = tasks
+
+    if deadline.strip():
+        d = deadline.strip()
+        result = [t for t in result if matches_deadline(t, d)]
+
+    if category.strip():
+        c = category.strip().lower()
+        result = [t for t in result if str(t.get("category", "")).lower() == c]
+
+    if completed.strip().lower() in ("true", "false"):
+        want = completed.strip().lower() == "true"
+        result = [t for t in result if bool(t.get("completed", False)) == want]
+
+    return ok(tasks=result, count=len(result))
 
 
 
