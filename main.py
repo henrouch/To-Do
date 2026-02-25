@@ -95,6 +95,42 @@ def add_task(
     save_data(data)
     return ok(task=task)
 
+@mcp.tool(title="Delete Task")
+def delete_task(
+    task_id: int,
+    client_id: str = DEFAULT_CLIENT,
+    was_completed: bool = False
+):
+    """
+    Deletes a task and updates stats:
+      - was_completed=True => completed counter +1
+      - was_completed=False => failed counter +1
+    """
+    data = load_data()
+    if "clients" not in data:
+        data["clients"] = {}
+    ensure_client(data, client_id)
+
+    try:
+        task_id = int(task_id)
+    except Exception:
+        return err("task_id must be an integer", task_id=task_id)
+
+    tasks = data["clients"][client_id]["tasks"]
+    for i, task in enumerate(tasks):
+        if int(task["id"]) == task_id:
+            deleted = tasks.pop(i)
+
+            if bool(was_completed):
+                data["clients"][client_id]["stats"]["completed"] += 1
+            else:
+                data["clients"][client_id]["stats"]["failed"] += 1
+
+            save_data(data)
+            return ok(deleted=deleted, stats=data["clients"][client_id]["stats"])
+
+    return err("Task not found", task_id=task_id)
+
 
 
 
