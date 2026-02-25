@@ -132,6 +132,7 @@ def delete_task(
     return err("Task not found", task_id=task_id)
 
 
+
 @mcp.tool(title="List Tasks")
 def list_tasks(client_id: str = DEFAULT_CLIENT):
     data = load_data()
@@ -159,7 +160,6 @@ def list_tasks(client_id: str = DEFAULT_CLIENT):
 
     output.append("\nCompleted: " + str(stats["completed"]))
     output.append("Failed: " + str(stats["failed"]))
-
     return "\n".join(output)
 
 
