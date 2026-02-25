@@ -96,6 +96,37 @@ def add_task(
     return ok(task=task)
 
 
+@mcp.tool(title="List Tasks")
+def list_tasks(client_id: str = DEFAULT_CLIENT):
+    data = load_data()
+    ensure_client(data, client_id)
+
+    tasks = data["clients"][client_id]["tasks"]
+    stats = data["clients"][client_id]["stats"]
+
+    if not tasks:
+        return f"No tasks found for client '{client_id}'."
+
+    output = []
+    output.append(f"Client: {client_id}\n")
+    output.append("ID | Title | Deadline | Category | Status")
+    output.append("---|-------|----------|-----------|--------")
+
+    for task in tasks:
+        status = "done" if task.get("completed") else "pending"
+        deadline = task.get("deadline") or "None"
+        category = task.get("category") or "None"
+
+        output.append(
+            f"{task['id']} | {task['title']} | {deadline} | {category} | {status}"
+        )
+
+    output.append("\nCompleted: " + str(stats["completed"]))
+    output.append("Failed: " + str(stats["failed"]))
+
+    return "\n".join(output)
+
+
 
 
 
