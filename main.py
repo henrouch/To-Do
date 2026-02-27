@@ -162,7 +162,43 @@ def list_tasks(client_id: str = DEFAULT_CLIENT):
     output.append("Failed: " + str(stats["failed"]))
     return "\n".join(output)
 
+@mcp.tool(title="Edit Task")
+def edit_task(
+    task_id: int,
+    client_id: str = DEFAULT_CLIENT,
+    new_title: str = None,
+    new_description: str = None,
+    new_deadline: str = None,
+    new_category: str = None
+):
+    data = load_data()
+    if "clients" not in data:
+        data["clients"] = {}
+    ensure_client(data, client_id)
 
+    try:
+        task_id = int(task_id)
+    except Exception:
+        return err("task_id must be an integer", task_id=task_id)
+
+    for task in data["clients"][client_id]["tasks"]:
+        if int(task["id"]) == task_id:
+            if new_title is not None:
+                nt = str(new_title).strip()
+                if not nt:
+                    return err("new_title cannot be empty")
+                task["title"] = nt
+            if new_description is not None:
+                task["description"] = str(new_description).strip()
+            if new_deadline is not None:
+                task["deadline"] = str(new_deadline).strip()
+            if new_category is not None:
+                task["category"] = str(new_category).strip().lower()
+
+            save_data(data)
+            return ok(task=task)
+
+    return err("Task not found", task_id=task_id)
 
 
 
