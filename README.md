@@ -38,3 +38,78 @@ Claude MCP Integration | Claude can control the task manager through MCP tools |
 
 ---
 
+# Model Context Protocol Setup Guide
+
+## Installation
+
+- Install the MCP Python package with pip:
+  ```bash
+  pip install mcp[cli]
+  ```
+
+- Install the `requests` package:
+  ```bash
+  pip install requests
+  ```
+
+- Download the Claude Desktop client.
+
+---
+
+## Python Setup
+
+- In your Python code, import the MCP library:
+  ```python
+  from mcp.server.fastmcp import FastMCP
+  ```
+  Read the documentation on how to use this class.
+
+- Define a tool for the service:
+  ```python
+  @mcp.tool(title="My Task")
+  ```
+
+---
+
+## Claude Desktop Configuration
+
+Edit the Claude Desktop configuration in one of the following ways:
+
+- Go to:  
+  **Settings → Developer → Edit Config**
+
+**OR**
+
+- Locate the configuration file on your system:
+
+  - **macOS:**  
+    `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+  - **Windows:**  
+    `%APPDATA%\Claude\claude_desktop_config.json`
+
+---
+
+## Add MCP Server Entry
+
+- Create an entry for `"mcpServers"` in the config file.
+- Enter your server configuration information.
+- Start your Python program.
+- Once configured, Claude Desktop should recognize that the server is running.
+
+---
+
+## Verify
+
+Prompt Claude Desktop to list the available actions it has.
+
+---
+
+## Resources
+
+- Python SDK GitHub:  
+  https://github.com/modelcontextprotocol/python-sdk
+
+- MCP Documentation:  
+  https://modelcontextprotocol.io/docs/getting-started/intro
+
