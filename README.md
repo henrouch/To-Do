@@ -44,7 +44,7 @@ Claude MCP Integration | Claude can control the task manager through MCP tools |
 
 - Install the MCP Python package with pip:
   ```bash
-  pip install mcp[cli]
+  pip install "mcp[cli]"
   ```
 
 - Install the `requests` package:
