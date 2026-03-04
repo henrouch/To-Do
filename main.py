@@ -238,6 +238,28 @@ def filter_tasks(
     return ok(tasks=result, count=len(result))
 
 
+
+@mcp.tool(title="Complete Task")
+def complete_task(task_id: int, client_id: str = DEFAULT_CLIENT, completed: bool = True):
+    data = load_data()
+    if "clients" not in data:
+        data["clients"] = {}
+    ensure_client(data, client_id)
+
+    try:
+        task_id = int(task_id)
+    except Exception:
+        return err("task_id must be an integer", task_id=task_id)
+
+    for task in data["clients"][client_id]["tasks"]:
+        if int(task["id"]) == task_id:
+            task["completed"] = bool(completed)
+            save_data(data)
+            return ok(task=task)
+
+    return err("Task not found", task_id=task_id)
+    
+
 @mcp.tool(title="Get Stats")
 def get_stats(client_id: str = DEFAULT_CLIENT):
     data = load_data()
