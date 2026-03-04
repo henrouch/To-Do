@@ -200,6 +200,61 @@ def edit_task(
 
     return err("Task not found", task_id=task_id)
 
+@mcp.tool(title="Filter Tasks")
+def filter_tasks(
+    client_id: str = DEFAULT_CLIENT,
+    deadline: str = "",
+    category: str = "",
+    completed: str = ""   # "", "true", "false"
+):
+    """
+    Filter by:
+      - deadline (exact match string)
+      - category (case-insensitive)
+      - completed: "true" or "false" (optional)
+    """
+    data = load_data()
+    if "clients" not in data:
+        data["clients"] = {}
+    ensure_client(data, client_id)
+
+    tasks = data["clients"][client_id]["tasks"]
+
+    # Apply filters
+    result = tasks
+
+    if deadline.strip():
+        d = deadline.strip()
+        result = [t for t in result if matches_deadline(t, d)]
+
+    if category.strip():
+        c = category.strip().lower()
+        result = [t for t in result if str(t.get("category", "")).lower() == c]
+
+    if completed.strip().lower() in ("true", "false"):
+        want = completed.strip().lower() == "true"
+        result = [t for t in result if bool(t.get("completed", False)) == want]
+
+    for task in data["clients"][client_id]["tasks"]:
+        if int(task["id"]) == task_id:
+            if new_title is not None:
+                nt = str(new_title).strip()
+                if not nt:
+                    return err("new_title cannot be empty")
+                task["title"] = nt
+            if new_description is not None:
+                task["description"] = str(new_description).strip()
+            if new_deadline is not None:
+                task["deadline"] = str(new_deadline).strip()
+            if new_category is not None:
+                task["category"] = str(new_category).strip().lower()
+
+            save_data(data)
+            return ok(task=task)
+
+    return err("Task not found", task_id=task_id)
+
+    return ok(tasks=result, count=len(result))
 
 
 @mcp.tool(title="Get Stats")
