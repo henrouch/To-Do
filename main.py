@@ -65,6 +65,8 @@ def matches_deadline(task, deadline):
     # simple exact-match deadline filter (ex: "2026-02-21")
     return str(task.get("deadline", "")) == str(deadline)
 
+# ---------- Tools ----------
+
 @mcp.tool(title="Add Task")
 def add_task(
     title: str,
